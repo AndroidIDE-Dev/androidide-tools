@@ -1,13 +1,13 @@
 {
-    "android_sdk": "https://github.com/AndroidIDEOfficial/androidide-tools/releases/download/sdk/android-sdk.tar.xz",
+    "android_sdk": "https://github.com/AndroidIDE-Dev/androidide-tools/releases/download/37.0.0/platform-37.0_r02.zip",
     "build_tools": {
 
         "aarch64": {
-            "_37_0_0": "https://github.com/HomuHomu833/android-sdk-custom/releases/download/37.0.0/android-sdk-aarch64-linux-android.tar.xz"
+            "_37_0_0": "https://github.com/AndroidIDE-Dev/androidide-tools/releases/download/37.0.0/android-sdk-aarch64-linux-android.tar.xz"
         },
 
         "arm" : {
-            "_37_0_0": "https://github.com/HomuHomu833/android-sdk-custom/releases/download/37.0.0/android-sdk-armv7a-linux-androideabi.tar.xz"
+            "_37_0_0": "https://github.com/AndroidIDE-Dev/androidide-tools/releases/download/37.0.0/android-sdk-armv7a-linux-androideabi.tar.xz"
         }
     }
 }
