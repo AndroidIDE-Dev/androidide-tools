@@ -1,0 +1,88 @@
+name: Download and Upload Files to Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: "Release tag"
+        required: true
+        type: string
+
+      download_urls:
+        description: "Direct download URLs separated by commas"
+        required: true
+        type: string
+
+      overwrite:
+        description: "Overwrite existing files with the same name"
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download files
+        env:
+          DOWNLOAD_URLS: ${{ inputs.download_urls }}
+        run: |
+          mkdir -p downloads
+
+          IFS=',' read -ra URLS <<< "$DOWNLOAD_URLS"
+
+          for URL in "${URLS[@]}"; do
+            URL="$(echo "$URL" | xargs)"
+
+            echo "Downloading: $URL"
+
+            FILE_NAME="${URL##*/}"
+
+            wget \
+              --show-progress \
+              -O "downloads/$FILE_NAME" \
+              "$URL"
+          done
+
+      - name: Create or update release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ inputs.release_tag }}
+          OVERWRITE: ${{ inputs.overwrite }}
+        run: |
+          if gh release view "$TAG" \
+            --repo "${{ github.repository }}" >/dev/null 2>&1; then
+
+            echo "Release $TAG already exists."
+            echo "Uploading files..."
+
+            if [ "$OVERWRITE" = "true" ]; then
+              gh release upload \
+                "$TAG" \
+                downloads/* \
+                --repo "${{ github.repository }}" \
+                --clobber
+            else
+              gh release upload \
+                "$TAG" \
+                downloads/* \
+                --repo "${{ github.repository }}"
+            fi
+
+          else
+
+            echo "Release $TAG does not exist."
+            echo "Creating release..."
+
+            gh release create \
+              "$TAG" \
+              downloads/* \
+              --repo "${{ github.repository }}" \
+              --title "$TAG" \
+              --generate-notes
+
+          fi
